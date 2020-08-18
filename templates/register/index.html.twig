@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ form(form) }}
+    <a class="nav-link float-right" href="{{ path('app_login') }}">Sign in</a>
+{% endblock %}
+
+{% block title %}Hello RegisterController!{% endblock %}
+
