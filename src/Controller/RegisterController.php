@@ -43,6 +43,7 @@ class RegisterController extends AbstractController
             $user->setPassword(
                 $passwordEncoder->encodePassword($user, $data['password'])
             );
+            $user->setIsActive(false);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);

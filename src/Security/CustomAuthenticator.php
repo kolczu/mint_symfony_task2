@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Security;
@@ -25,11 +27,13 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
     use TargetPathTrait;
 
     public const LOGIN_ROUTE = 'app_login';
+    public const REGISTER_ROUTE = 'register';
 
     private $entityManager;
     private $urlGenerator;
     private $csrfTokenManager;
     private $passwordEncoder;
+    private $hasUser = true;
 
     public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -68,10 +72,12 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
         }
 
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $credentials['username']]);
-
         if (!$user) {
+            $this->hasUser = false;
             // fail authentication with a custom error
             throw new CustomUserMessageAuthenticationException('Username could not be found.');
+        } else if ($user && $user->getIsActive() === false) {
+            throw new CustomUserMessageAccountStatusException('Account is not active');
         }
 
         return $user;
@@ -83,13 +89,22 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
     }
 
     /**
-     * Used to upgrade (rehash) the user's password automatically over time.
+     * sed to upgrade (rehash) the user's password automatically over time.
+     *
+     * @param mixed $credentials
+     * @return string|null
      */
     public function getPassword($credentials): ?string
     {
         return $credentials['password'];
     }
 
+    /**
+     * @param Request $request
+     * @param TokenInterface $token
+     * @param string $providerKey
+     * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response|null
+     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
@@ -99,6 +114,39 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
         return new RedirectResponse($this->urlGenerator->generate('index'));
     }
 
+    /**
+     * Override to change what happens after a bad username/password is submitted.
+     *
+     * @param Request $request
+     * @param AuthenticationException $exception
+     * @return RedirectResponse
+     */
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    {
+        if ($request->hasSession()) {
+            $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+        }
+
+        if (!$this->hasUser) {
+            $url = $this->getRegisterUrl();
+        } else {
+            $url = $this->getLoginUrl();
+        }
+
+        return new RedirectResponse($url);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getRegisterUrl()
+    {
+        return $this->urlGenerator->generate(self::REGISTER_ROUTE);
+    }
+
+    /**
+     * @return string
+     */
     protected function getLoginUrl()
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);

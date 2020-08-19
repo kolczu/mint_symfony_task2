@@ -27,9 +27,10 @@ CREATE TABLE `user` (
   `username` varchar(180) COLLATE utf8mb4_unicode_ci NOT NULL,
   `roles` json NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_8D93D649F85E0677` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +39,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'user','[]','$argon2id$v=19$m=65536,t=4,p=1$WqvkgwFn9AE2HAfP6PP5Ow$5+fP6/qHjv8HSQzBnpJaoqu3x3G+G+tSxYm2D8pCjHg'),(2,'user2','[]','$argon2id$v=19$m=65536,t=4,p=1$Mku9Ikivnqt/r6hv2hWhDw$Igsbc0pEnAcISogxd/NhYt8hPuHgkxBaAr5QM9HJ3x4'),(3,'user3','[]','$argon2id$v=19$m=65536,t=4,p=1$L4newu7tu572SCh4imsBsw$C/uU1U728Qh59vzPzbL0S+XE52P07+an8LzVUhqLFFU'),(4,'user4','[]','$argon2id$v=19$m=65536,t=4,p=1$De5BRPwVj0OqHgtUaQXWgA$tZhe+bZkxJWrKT4OkE2tHUl1cmIGIe+qB/aGniwRl/Y'),(5,'user5','[]','$argon2id$v=19$m=65536,t=4,p=1$+vndVspXSy9zBJR0CfPlUQ$qMEZYTXyik//7Q0Lv6amzVinUKbJnxAzxarWeSVsMC8'),(6,'user6','[]','$argon2id$v=19$m=65536,t=4,p=1$Lvz2PPZmra20uC8fnt7OZg$7MK/eDmZeTQtygoFRRPTFiWgvP5prZDcn+T0r9uNNdg'),(7,'user7','[]','$argon2id$v=19$m=65536,t=4,p=1$JZ8EA68aRvx/6dzPzJacUA$v+XBXV01haPDjCJ+/FTmIOaStfR4odajwX4HbM/gHAY'),(8,'user8','[]','$argon2id$v=19$m=65536,t=4,p=1$WCSNeHuCdB1iJDLmxpiu6g$yhbwVLqBvuTieiIde7YVWvIEry/uy2s2+AM6KgLzeEY'),(9,'user9','[]','$argon2id$v=19$m=65536,t=4,p=1$F3nrSqERty4KMoSeKMwgzg$G+3wLLgJd6IWoTu32P8fb8tlTj4f8nSzrTpyNmD/JfY'),(10,'user10','[]','$argon2id$v=19$m=65536,t=4,p=1$r8qAybuMT/2P0eTZKwrnRw$ZW+p0V/rM+20pMOWXNTbIaWB4QJfuovb5l/5NCzxAms'),(11,'user11','[]','$argon2id$v=19$m=65536,t=4,p=1$Wl80nXxGX09x1Jde6dRuPA$r1oIh/jVHuuCjFtNoNME/XWG1QRTgTrCB3EHXJTQY6s');
+INSERT INTO `user` VALUES (1,'user','[]','$argon2id$v=19$m=65536,t=4,p=1$WqvkgwFn9AE2HAfP6PP5Ow$5+fP6/qHjv8HSQzBnpJaoqu3x3G+G+tSxYm2D8pCjHg',1),(2,'user2','[]','$argon2id$v=19$m=65536,t=4,p=1$Mku9Ikivnqt/r6hv2hWhDw$Igsbc0pEnAcISogxd/NhYt8hPuHgkxBaAr5QM9HJ3x4',0),(3,'user3','[]','$argon2id$v=19$m=65536,t=4,p=1$L4newu7tu572SCh4imsBsw$C/uU1U728Qh59vzPzbL0S+XE52P07+an8LzVUhqLFFU',0),(4,'user4','[]','$argon2id$v=19$m=65536,t=4,p=1$De5BRPwVj0OqHgtUaQXWgA$tZhe+bZkxJWrKT4OkE2tHUl1cmIGIe+qB/aGniwRl/Y',0),(5,'user5','[]','$argon2id$v=19$m=65536,t=4,p=1$+vndVspXSy9zBJR0CfPlUQ$qMEZYTXyik//7Q0Lv6amzVinUKbJnxAzxarWeSVsMC8',0),(6,'user6','[]','$argon2id$v=19$m=65536,t=4,p=1$Lvz2PPZmra20uC8fnt7OZg$7MK/eDmZeTQtygoFRRPTFiWgvP5prZDcn+T0r9uNNdg',0),(7,'user7','[]','$argon2id$v=19$m=65536,t=4,p=1$JZ8EA68aRvx/6dzPzJacUA$v+XBXV01haPDjCJ+/FTmIOaStfR4odajwX4HbM/gHAY',1),(8,'user8','[]','$argon2id$v=19$m=65536,t=4,p=1$WCSNeHuCdB1iJDLmxpiu6g$yhbwVLqBvuTieiIde7YVWvIEry/uy2s2+AM6KgLzeEY',0),(9,'user9','[]','$argon2id$v=19$m=65536,t=4,p=1$F3nrSqERty4KMoSeKMwgzg$G+3wLLgJd6IWoTu32P8fb8tlTj4f8nSzrTpyNmD/JfY',0),(10,'user10','[]','$argon2id$v=19$m=65536,t=4,p=1$r8qAybuMT/2P0eTZKwrnRw$ZW+p0V/rM+20pMOWXNTbIaWB4QJfuovb5l/5NCzxAms',0),(11,'user11','[]','$argon2id$v=19$m=65536,t=4,p=1$Wl80nXxGX09x1Jde6dRuPA$r1oIh/jVHuuCjFtNoNME/XWG1QRTgTrCB3EHXJTQY6s',0),(12,'user12','[]','$argon2id$v=19$m=65536,t=4,p=1$+nH9hvFQe6AYBjZHF892qQ$4TjvhclToi7/HjaDMnzEer2tsJFGEPuriSsWkJsksso',1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-18 23:02:05
+-- Dump completed on 2020-08-19 22:03:42

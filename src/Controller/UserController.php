@@ -27,4 +27,32 @@ class UserController extends AbstractController
                 10)
         ]);
     }
+
+    /**
+     * @Route("/activeAccount/{id}", name="activeAccount")
+     */
+    public function activeAccount(EntityManagerInterface $em, $id)
+    {
+        if ($this->getUser()) {
+            $user = $em->getRepository(User::class)->findOneById($id);
+            $user->setIsActive(true);
+            $em->persist($user);
+            $em->flush();
+            return $this->redirectToRoute('index');
+        }
+    }
+
+    /**
+     * @Route("/deactiveAccount/{id}", name="deactiveAccount")
+     */
+    public function deactiveAccount(EntityManagerInterface $em, $id)
+    {
+        if ($this->getUser()) {
+            $user = $em->getRepository(User::class)->findOneById($id);
+            $user->setIsActive(false);
+            $em->persist($user);
+            $em->flush();
+            return $this->redirectToRoute('index');
+        }
+    }
 }
