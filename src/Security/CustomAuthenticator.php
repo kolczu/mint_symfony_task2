@@ -22,6 +22,10 @@ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticato
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
+/**
+ * Class CustomAuthenticator
+ * @package App\Security
+ */
 class CustomAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
 {
     use TargetPathTrait;
@@ -35,6 +39,13 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
     private $passwordEncoder;
     private $hasUser = true;
 
+    /**
+     * CustomAuthenticator constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     */
     public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->entityManager = $entityManager;
@@ -43,12 +54,20 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
         $this->passwordEncoder = $passwordEncoder;
     }
 
+    /**
+     * @param Request $request
+     * @return bool
+     */
     public function supports(Request $request)
     {
         return self::LOGIN_ROUTE === $request->attributes->get('_route')
             && $request->isMethod('POST');
     }
 
+    /**
+     * @param Request $request
+     * @return array|mixed
+     */
     public function getCredentials(Request $request)
     {
         $credentials = [
@@ -64,6 +83,11 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
         return $credentials;
     }
 
+    /**
+     * @param mixed $credentials
+     * @param UserProviderInterface $userProvider
+     * @return object|UserInterface|null
+     */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
@@ -74,7 +98,6 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $credentials['username']]);
         if (!$user) {
             $this->hasUser = false;
-            // fail authentication with a custom error
             throw new CustomUserMessageAuthenticationException('Username could not be found.');
         } else if ($user && $user->getIsActive() === false) {
             throw new CustomUserMessageAccountStatusException('Account is not active');
@@ -83,6 +106,11 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
         return $user;
     }
 
+    /**
+     * @param mixed $credentials
+     * @param UserInterface $user
+     * @return bool
+     */
     public function checkCredentials($credentials, UserInterface $user)
     {
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
@@ -115,7 +143,7 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
     }
 
     /**
-     * Override to change what happens after a bad username/password is submitted.
+     * What happens after a bad username/password is submitted.
      *
      * @param Request $request
      * @param AuthenticationException $exception
@@ -137,6 +165,8 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
     }
 
     /**
+     * Get register url
+     *
      * @return string
      */
     protected function getRegisterUrl()
@@ -145,6 +175,8 @@ class CustomAuthenticator extends AbstractFormLoginAuthenticator implements Pass
     }
 
     /**
+     * Get login url
+     *
      * @return string
      */
     protected function getLoginUrl()
